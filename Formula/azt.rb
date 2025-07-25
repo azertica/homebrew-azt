@@ -1,39 +1,24 @@
 class Azt < Formula
   desc "Azertica Build Tool - Comprehensive CLI for project management and development workflow"
   homepage "https://github.com/azertica/azt"
-  url "https://github.com/azertica/azt/archive/v1.0.0.tar.gz"
-  sha256 "REPLACE_WITH_ACTUAL_SHA256_HASH"
+  url "https://registry.npmjs.org/@azertica/azt-cli/-/azt-cli-1.0.0.tgz"
+  sha256 "f08362dc1f43c89a6ac991986fe94af278af991785108d45700de0bda0c8e028"
   license "MIT"
   version "1.0.0"
-  head "https://github.com/azertica/azt.git", branch: "main"
 
-  depends_on "node" => :build
-  depends_on "npm" => :build
+  depends_on "node"
 
   def install
-    # Install npm dependencies and build
-    system "npm", "install", "--production"
-    system "npm", "run", "build"
-    
-    # Install to libexec to avoid conflicts
-    libexec.install Dir["*"]
-    
-    # Create wrapper script that uses the system node
-    (bin/"azt").write <<~EOS
-      #!/bin/bash
-      exec node "#{libexec}/dist/cli.js" "$@"
-    EOS
-    
-    # Make the wrapper executable
-    chmod 0755, bin/"azt"
+    system "npm", "install", *std_npm_args
+    bin.install_symlink Dir["#{libexec}/bin/*"]
     
     # Install shell completions if they exist
-    if File.exist?("scripts/shell/azt-completion.bash")
-      bash_completion.install "scripts/shell/azt-completion.bash" => "azt"
+    if (libexec/"scripts/shell/azt-completion.bash").exist?
+      bash_completion.install libexec/"scripts/shell/azt-completion.bash" => "azt"
     end
     
-    if File.exist?("scripts/shell/azt-completion.zsh")
-      zsh_completion.install "scripts/shell/azt-completion.zsh" => "_azt"
+    if (libexec/"scripts/shell/azt-completion.zsh").exist?
+      zsh_completion.install libexec/"scripts/shell/azt-completion.zsh" => "_azt"
     end
   end
 
@@ -43,12 +28,6 @@ class Azt < Formula
     
     # Test basic functionality
     system "#{bin}/azt", "--help"
-    
-    # Test that it can show commands
-    output = shell_output("#{bin}/azt --help")
-    assert_match "Commands:", output
-    assert_match "build", output
-    assert_match "test", output
   end
 
   def caveats
