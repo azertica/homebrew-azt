@@ -11,15 +11,6 @@ class Azt < Formula
   def install
     system "npm", "install", *std_npm_args
     bin.install_symlink Dir["#{libexec}/bin/*"]
-    
-    # Install shell completions if they exist
-    if (libexec/"scripts/shell/azt-completion.bash").exist?
-      bash_completion.install libexec/"scripts/shell/azt-completion.bash" => "azt"
-    end
-    
-    if (libexec/"scripts/shell/azt-completion.zsh").exist?
-      zsh_completion.install libexec/"scripts/shell/azt-completion.zsh" => "_azt"
-    end
   end
 
   test do
@@ -28,22 +19,5 @@ class Azt < Formula
     
     # Test basic functionality
     system "#{bin}/azt", "--help"
-  end
-
-  def caveats
-    <<~EOS
-      AZT CLI has been installed successfully!
-      
-      To get started:
-        1. Initialize a new project: azt init
-        2. View available commands: azt --help
-        3. Read the documentation: https://github.com/azertica/azt
-      
-      Shell completion has been installed for bash and zsh.
-      You may need to restart your shell or source your profile.
-      
-      For more information and examples, visit:
-      https://github.com/azertica/azt/blob/main/README.md
-    EOS
   end
 end
